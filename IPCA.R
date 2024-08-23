@@ -21,6 +21,8 @@ sum(is.na(data$IPCA_Index))
 # Step 3: Create a time series object
 ipca_ts <- ts(data$IPCA_Index, start=c(1994,1), frequency=12) # Monthly data starting from 1994
 
+ipca_ts
+
 # Step 4: Plot the time series to visualize it
 plot(ipca_ts, main="IPCA Time Series", ylab="IPCA Index", xlab="Year")
 
@@ -47,3 +49,5 @@ plot(forecast_values, main="IPCA Index Forecast", ylab="IPCA Index", xlab="Year"
 
 # Step 11: Print the forecasted values
 print(forecast_values)
+
+

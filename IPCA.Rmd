@@ -1,0 +1,91 @@
+---
+title: "IPCA"
+author: "Daniel Sayao"
+date: "2024-08-23"
+output: pdf_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+#Understanding IPCA #The Índice de Preços ao Consumidor Amplo (IPCA) isthe official inflation measure in Brazil, calculated by the BrazilianInstitute of Geography and Statistics (IBGE). Established in 1979, IPCA monitors the price changes of a basket of goods and services representative of consumption patterns among Brazilian households with monthly incomes ranging from 1 to 40 minimum wages. It covers multiple categories, such as food, transportation, housing, and healthcare, and serves as a critical indicator for economic planning, monetary policy, and contract adjustments in the country.
+
+#Code Explanation #This code provides a step-by-step guide to load, analyze, and forecast future values of the IPCA using R. It uses time series analysis techniques, specifically ARIMA (AutoRegressive Integrated Moving Average), to predict inflation trends.
+
+# Install and load necessary packages
+
+install.packages("forecast") install.packages("tseries")
+
+library(forecast) library(tseries)
+
+install.packages("tinytex")
+tinytex::install_tinytex()
+
+# Step 1: Load the data
+
+# Assuming the data is stored in a CSV file with columns: Date and IPCA_Index
+
+data \<- read.csv("ipca_data.csv")
+
+data
+
+# Step 2: Convert the Date column to Date type and set it as the index
+
+data$Date <- as.Date(data$Date, format="%d/%m/%Y")
+
+head(data\$IPCA_Index)
+
+sum(is.na(data\$IPCA_Index))
+
+# Step 3: Create a time series object
+
+ipca_ts \<- ts(data\$IPCA_Index, start=c(1994,1), frequency=12) \#
+Monthly data starting from 1994
+
+ipca_ts
+
+# Step 4: Plot the time series to visualize it
+
+plot(ipca_ts, main="IPCA Time Series", ylab="IPCA Index", xlab="Year")
+
+![IPCA Time Series](IPCA TIME SERIES.png)
+
+# Step 5: Check for stationarity using Augmented Dickey-Fuller test
+
+adf_test \<- adf.test(ipca_ts) print(adf_test)
+
+# Step 6: Differencing if necessary to make the series stationary
+
+ipca_diff \<- diff(ipca_ts, differences=1) plot(ipca_diff,
+main="Differenced IPCA Time Series", ylab="Differenced IPCA Index",
+xlab="Year")
+
+![Differenced IPCA Time Series](Differenced IPCA Time Series.png)
+
+# Step 7: Fit the ARIMA model
+
+fit \<- auto.arima(ipca_ts)
+
+# Step 8: Summarize the model
+
+summary(fit)
+
+# Step 9: Forecast future values
+
+forecast_period \<- 12 \# Forecast for the next 12 months
+forecast_values \<- forecast(fit, h=forecast_period)
+
+# Step 10: Plot the forecast
+
+plot(forecast_values, main="IPCA Index Forecast", ylab="IPCA Index",
+xlab="Year")
+
+![IPCA Index Forecast](IPCA Index Forecast.png)
+
+# Step 11: Print the forecasted values
+
+print(forecast_values)
+
+```         
+> print(forecast_values)          Point Forecast    Lo 80    Hi 80    Lo 95    Hi 95 Aug 2024       6992.530 6970.584 7014.477 6958.967 7026.094 Sep 2024       7016.008 6973.223 7058.793 6950.575 7081.441 Oct 2024       7041.293 6977.970 7104.615 6944.449 7138.136 Nov 2024       7064.773 6981.949 7147.598 6938.104 7191.443 Dec 2024       7090.917 6989.859 7191.975 6936.362 7245.472 Jan 2025       7113.800 6995.788 7231.813 6933.315 7294.285 Feb 2025       7142.277 7008.504 7276.050 6937.689 7346.864 Mar 2025       7165.309 7016.854 7313.764 6938.266 7392.352 Apr 2025       7188.324 7026.141 7350.507 6940.286 7436.361 May 2025       7209.829 7034.758 7384.900 6942.081 7477.576 Jun 2025       7228.228 7041.007 7415.450 6941.897 7514.559 Jul 2025       7246.887 7048.161 7445.613 6942.962 7550.812
+```
